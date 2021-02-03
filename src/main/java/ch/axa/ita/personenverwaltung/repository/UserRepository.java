@@ -8,13 +8,11 @@ import java.util.Optional;
 
 public class UserRepository {
     private int id;
-    private List<User> users;
+    private final List<User> users = new ArrayList<>();
 
     public UserRepository() {
         super();
-
         id = 0;
-        users = new ArrayList<>();
     }
 
     public User create(User user) {
@@ -24,13 +22,6 @@ public class UserRepository {
         id++;
 
         return user;
-    }
-
-    public Optional<User> readById(int id) {
-        return users
-                .stream()
-                .filter(u -> u.getId() == id)
-                .findFirst();
     }
 
     public Optional<User> readByEmail(String email) {
@@ -49,29 +40,5 @@ public class UserRepository {
                         u.getToken() != null && u.getToken()
                                 .equals(token))
                 .findFirst();
-    }
-
-    public boolean update(User user) {
-        Optional<User> userFromDB = readById(user.getId());
-
-        if (userFromDB.isPresent()) {
-            int index = users.indexOf(userFromDB);
-            users.set(index, user);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean delete(int id) {
-        Optional<User> userFromDB = readById(id);
-
-        if (userFromDB.isPresent()) {
-            users.remove(userFromDB);
-            return true;
-        }
-
-        return false;
     }
 }

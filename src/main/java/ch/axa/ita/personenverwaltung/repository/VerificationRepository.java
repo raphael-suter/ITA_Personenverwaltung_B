@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class VerificationRepository {
-    private List<User> users;
+    private final List<User> users;
 
     public VerificationRepository() {
         super();
@@ -28,7 +28,7 @@ public class VerificationRepository {
                 .findFirst();
     }
 
-    public boolean delete(User user) {
-        return users.remove(user);
+    public void delete(User user) {
+        users.remove(user);
     }
 }

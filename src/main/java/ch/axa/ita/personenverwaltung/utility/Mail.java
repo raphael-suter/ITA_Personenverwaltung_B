@@ -42,7 +42,7 @@ public class Mail {
         properties.put(SSL_PROPERTY, SSL);
         properties.put(AUTH_PROPERTY, AUTH);
 
-        return Session.getInstance(properties, new javax.mail.Authenticator() {
+        return Session.getInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(USER, password());
             }
