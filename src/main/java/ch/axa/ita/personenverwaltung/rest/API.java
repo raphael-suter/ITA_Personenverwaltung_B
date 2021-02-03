@@ -3,6 +3,8 @@ package ch.axa.ita.personenverwaltung.rest;
 import ch.axa.ita.personenverwaltung.model.*;
 import ch.axa.ita.personenverwaltung.repository.UserRepository;
 import ch.axa.ita.personenverwaltung.repository.VerificationRepository;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,9 @@ public class API {
     private static final String AUTHORIZATION_HEADER = "authorization";
     private static final int TOKEN_INDEX = 0;
     private static final int MIN_LENGTH = 7;
+    private static final String URL_PATTERN = "/api/secured/*";
+    private static final int LEVEL_ONE = 1;
+    private static final int LEVEL_TWO = 2;
 
     private final VerificationRepository verificationRepository = new VerificationRepository();
     private final UserRepository userRepository = new UserRepository();
@@ -156,5 +161,27 @@ public class API {
 
     private boolean isEmpty(String input) {
         return input == null || input.isEmpty();
+    }
+
+    @Bean
+    public FilterRegistrationBean<LogFilter> registerLogFilter() {
+        FilterRegistrationBean<LogFilter> registrationBean = new FilterRegistrationBean<>();
+
+        registrationBean.setFilter(new LogFilter());
+        registrationBean.addUrlPatterns(URL_PATTERN);
+        registrationBean.setOrder(LEVEL_TWO);
+
+        return registrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<AuthenticationFilter> registerAuthenticationFilter() {
+        FilterRegistrationBean<AuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
+
+        registrationBean.setFilter(new AuthenticationFilter(this));
+        registrationBean.addUrlPatterns(URL_PATTERN);
+        registrationBean.setOrder(LEVEL_ONE);
+
+        return registrationBean;
     }
 }

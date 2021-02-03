@@ -1,9 +1,6 @@
 package ch.axa.ita.personenverwaltung.rest;
 
 import ch.axa.ita.personenverwaltung.model.Message;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -14,9 +11,7 @@ import java.io.IOException;
 
 import static ch.axa.ita.personenverwaltung.utility.Json.toJson;
 
-@Component
-public class Filter extends OncePerRequestFilter {
-    private static final String URL_PATTERN = "/api/secured/*";
+public class AuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "authorization";
     private static final int MIN_LENGTH = 7;
     private static final String CONTENT_TYPE = "application/json";
@@ -24,27 +19,19 @@ public class Filter extends OncePerRequestFilter {
 
     private final API api;
 
-    public Filter(API api) {
+    public AuthenticationFilter(API api) {
         this.api = api;
     }
 
     @Override
     public void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("AuthenticationFilter");
+
         if (isAuthorized(httpServletRequest)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         } else {
             denyAccess(httpServletResponse);
         }
-    }
-
-    @Bean
-    public FilterRegistrationBean<Filter> registerFilter() {
-        FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(this);
-        registrationBean.addUrlPatterns(URL_PATTERN);
-
-        return registrationBean;
     }
 
     private String getToken(HttpServletRequest httpServletRequest) {
